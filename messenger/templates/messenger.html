@@ -1,0 +1,175 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Slim | Чат</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/messenger.css' %}">
+    <audio src="{% static 'sound/slick-notification.ogg' %}" id="notification"></audio>
+</head>
+
+<body>
+    <div class="messenger-container">
+        <div class="messenger">
+            <div class="sidebar" id="sidebar">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <img style="object-fit: cover; width: 120%; height: 120%; object-position: center;" src="{{ user.avatar_url }}" alt="#"/>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+                        <div class="user-status">
+                            <i class="fas fa-circle"></i>
+                            <span>В мережі</span>
+                        </div>
+                    </div>
+                    <div class="popup-container">
+                        <button id="menuBtn" title="Налаштування" class="main-btn js-menu-btn"><i class="fa-solid fa-gear"></i></button>
+                        <div class="menu-content js-popup-menu">
+                            <a class="profile-trigger" data-type="self">Профіль</a>
+                            <a href="/users/settings/">Налаштування</a>
+                            <hr>
+                            <form action="{% url 'logout' %}">
+                                <button class="logout-btn" id="logoutBtn" title="Вийти">
+                                    Вийти з акаунту
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchChats" placeholder="Пошук чатів...">
+                    </div>
+                </div>
+
+                <div class="chats-list" id="chatsList"></div>
+            </div>
+
+            <div class="chat-main">
+                <div class="chat-header" id="chatHeader">
+                    <div class="chat-header-avatar" id="chatHeaderAvatar">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name" id="chatHeaderName">Оберіть чат</div>
+                        <div class="chat-header-status" id="chatHeaderStatus"></div>
+                    </div>
+                    <div class="chat-actions">
+                        <button id="searchMessagesBtn" title="Поиск"><i class="fas fa-search"></i></button>
+                        <div class="popup-container">
+                            <button id="menuBtn" title="Меню" class="main-btn js-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                        
+                            <div id="popupMenu" class="menu-content js-popup-menu">
+                                <a class="profile-trigger" data-type="chat">Профіль</a>
+                                <a class="chat-settings-trigger">Налаштування</a>
+                                <a class="group-trigger">Створити групу</a>
+                                
+                                <hr>
+                                <button class="chat-delete-btn" id="chatDeleteBtn" title="Видалити чат">
+                                    Видалити чат
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="messages-area" id="messagesArea">
+                    <div class="empty-chat">
+                        <i class="fas fa-comment-dots" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <p>Оберіть діалог, щоб розпочати розмову</p>
+                    </div>
+                </div>
+
+                <dialog id="profileModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Профіль користувача</h2>
+                            <button id="closeProfile" class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body" id="profileInfo"></div>
+                    </div>
+                </dialog>
+
+                <dialog id="createGroupModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Оберіть людей</h2>
+                            <button id="closeGroupCreate" class="close-btn">&times;</button>
+                        </div>
+                        
+                        <div class="modal-body" id="groupCreateSearch">
+                            <br>
+                            <div class="searched-chats" id="searchedChats"></div>
+                        </div>
+                        <button id="createGroupSubmitBtn" class="create-group-btn">Оберіть користувачів</button>
+                    </div>
+                </dialog>
+
+                <dialog id="chatSettingsModal">
+                    <form id="chatSettingsForm" method="POST" enctype="multipart/form-data">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2>Налаштування чату</h2>
+                                <button id="closeChatSettings" type="button" class="close-btn">&times;</button>
+                            </div>
+                            <div class="modal-body" id="chatSettings">
+                            
+                                <div class="avatar-section">
+                                    <div class="avatar-preview">
+                                        <img id="avatarPreviewImg" src="" alt="Avatar" style="display: none;">
+                                    </div>
+                                    <div class="avatar-actions">
+                                        <button class="btn-outline" id="changeAvatarBtn" type="button">
+                                            <i class="fas fa-upload"></i> Завантажити
+                                        </button>
+                                        <button class="btn-outline" id="removeAvatarBtn" type="button">
+                                            <i class="fas fa-trash"></i> Видалити
+                                        </button>
+                                    </div>
+                                </div>
+                            
+                                <input type="file" id="settingsAvatar" name="avatar" accept="image/*" style="display: none;">
+                                <input type="hidden" name="update_chat" value="1">
+                                <input type="hidden" name="delete_avatar" id="deleteAvatarFlag" value="false">
+                            
+                                <div class="form-group">
+                                    <label for="settingsName">Назва чату</label>
+                                    <input type="text" id="settingsName" name="name" required class="form-control">
+                                </div>
+                            
+                                <button type="submit" class="btn-primary">Зберегти зміни</button>
+                            </div>
+                        </div>
+                    </form>
+                </dialog>
+
+                <div class="message-input-area" id="messageInputArea" style="display: none;">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Введите сообщение..." autocomplete="off">
+                    </div>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+    <script>const currentUserId = String("{{ request.user.id }}");</script>
+    <script src="{% static 'js/messenger.js' %}"></script>
+    <script src="{% static 'js/presence.js' %}"></script>
+    <script src="{% static 'js/popup.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+{% load widget_tweaks %}
+{% load static %}
+{% load socialaccount %}
+
+
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Створення акаунту | Реєстрація</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="header-section">
+                <div class="logo-badge">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1>Створити акаунт</h1>
+                <p class="subtitle">Приєднуйтеся до спільноти за секунди</p>
+            </div>
+
+            <form id="registrationForm" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        {% render_field form.username id="username" name="username" placeholder="Юзернейм" autocomplete="name" %}
+                    </div>
+                    <span class="error-message" id="usernameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        {% render_field form.email id="email" name="email" placeholder="Електронна адреса" autocomplete="email" %}
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        {% render_field form.first_name id="first-name" name="first-name" placeholder="Ваше ім`я" autocomplete="first_name" %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        {% render_field form.last_name id="last-name" name="last-name" placeholder="Ваша фамілія" autocomplete="last_name" %}
+                    </div>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="password-wrapper">
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            {% render_field form.password1 id="password" name="password" placeholder="Пароль" autocomplete="new-password" %}
+                        </div>
+                        <button type="button" class="toggle-password" data-target="password">
+                            <i class="far fa-eye-slash"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="password-wrapper">
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-check-circle input-icon"></i>
+                            {% render_field form.password2 id="confirmPassword" placeholder="Підтвердіть пароль" autocomplete="off" %}
+                        </div>
+                        <button type="button" class="toggle-password" data-target="confirmPassword">
+                            <i class="far fa-eye-slash"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="confirmError"></span>
+                </div>
+                
+                <span class="error-message" id="termsCustomError" style="margin-top: 0px">{% for i in errors %}{{ i }}{% endfor %}</span>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsCheckbox">
+                    <label for="termsCheckbox">
+                        Я згоден з <a href="#" id="termsLink">умовами використання</a> та <a href="#"
+                            id="privacyLink">політикою кондифенційності</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="register-btn">
+                    <i class="fas fa-arrow-right-to-bracket"></i> Зареєструватися
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>або продовжити з</span>
+            </div>
+
+            <div class="social-buttons">
+                <a href="{% provider_login_url 'google' process='login' %}" class="social-btn google" id="googleSignup">
+                    <i class="fab fa-google"></i> Google
+                </a>
+                <a href="{% provider_login_url 'github' process='login' %}" class="social-btn github" id="githubSignup">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+
+            <div class="login-link">
+                Вже є акаунт?<a href="{% url 'login' %}" id="loginRedirect">Увійти</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastMsg" class="toast-notification">✨ Привіт!</div>
+
+    <script src="{% static 'js/register.js' %}"></script>
+</body>
+
+</html>
