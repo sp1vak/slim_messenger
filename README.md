@@ -163,8 +163,8 @@ media/
 
 * **Автор:** Костянтин
 * **Email:** [sp1vak@icloud.com]()
-* **GitHub:** [@sp1vak](https://www.google.com/search?q=https://github.com/sp1vak)
-* **Telegram:** [@sp2vak](https://www.google.com/search?q=https://t.me/sp2vak)
+* **GitHub:** [@sp1vak](https://github.com/sp1vak)
+* **Telegram:** [@sp2vak](https://t.me/sp2vak)
 
 ---
 
