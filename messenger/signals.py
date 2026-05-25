@@ -64,6 +64,7 @@ def chat_delete(sender, instance, **kwargs):
 def pre_save_counter(sender, instance, **kwargs):
     if instance.pk is None:
         instance._user_ids = []
+        instance._changes_count = 0
         return
     instance._user_ids = list(instance.participants.values_list("id", flat=True))
 
@@ -84,15 +85,15 @@ def pre_save_counter(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Conversation)
 def chat_changed(sender, instance, created, **kwargs):
-    changes_count = getattr(instance, "_changes_count")
+    changes_count = getattr(instance, "_changes_count", 0)
     if created or changes_count == 0:
-        pass
-    else:
-        channel_layer = get_channel_layer()
-        user_ids = getattr(instance, "_user_ids", [])
+        return
+    
+    channel_layer = get_channel_layer()
+    user_ids = getattr(instance, "_user_ids", [])
 
-        for user_id in user_ids:
-            async_to_sync(channel_layer.group_send)(
-                f"notify_{str(user_id)}",
-                {"type": "chat_changed_notification", "conversation_id": instance.id},
-            )
+    for user_id in user_ids:
+        async_to_sync(channel_layer.group_send)(
+            f"notify_{str(user_id)}",
+            {"type": "chat_changed_notification", "conversation_id": instance.id},
+        )

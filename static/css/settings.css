@@ -209,7 +209,6 @@ body::after {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     transition: all 0.2s;
-
     width: 100%;
     box-sizing: border-box;
 }

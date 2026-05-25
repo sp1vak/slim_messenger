@@ -1,5 +1,6 @@
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 
 from .forms import (
     CustomUserAuthenticationForm,
@@ -49,11 +50,13 @@ def login_view(request):
     return render(request, "login.html", {"form": form})
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
 
 
+@login_required
 def settings(request):
     profile_form = CustomUserChangeForm(instance=request.user)
     change_password_form = CustomUserPasswordChangeForm(user=request.user)

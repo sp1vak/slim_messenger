@@ -109,8 +109,6 @@ async function openChat(chatId) {
         chatHeaderAvatar.innerHTML = `<img style="object-fit: cover; width: 100%; height: 100%; object-position: center;" src="${escapeHtml(chat.avatar)}" height=50px>`;
     } else { chatHeaderAvatar.innerHTML = `<i class="fas fa-comments"></i>`;}
     
-    showToast("Перенаправлення на другий чат", false)
-
     await renderMessages();
 }
 
@@ -248,9 +246,7 @@ async function listenToChatClick() {
 async function markChatAsSelected(chat_id = undefined) {
     document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
     
-    if (chat_id == undefined) {
-        // so we are taking activeChatId
-
+    if (chat_id == undefined) { // so we are taking activeChatId
         let chatItem = document.querySelector(`[data-chat-id="${escapeHtml(activeChatId)}"]`)
         chatItem.classList.add('active')
     } else {
@@ -336,10 +332,12 @@ function showToast(message, isError = false) {
 
 let timeout = null;
 
-searchChatsInput.addEventListener('input', (e) => {
+searchChatsInput.addEventListener('input', (e) => { 
     clearTimeout(timeout);
+    console.log(e.target.value)
     if (e.target.value.length == 0){
         updateChatList();
+        markChatAsSelected();
     } else {
         timeout = setTimeout(() => {
             fetch(`/api/messenger/search-users?q=${e.target.value}`)
@@ -412,10 +410,6 @@ logoutBtn.addEventListener('click', (e) => {
     else {
         e.preventDefault()
     }
-});
-
-document.getElementById('searchMessagesBtn')?.addEventListener('click', () => {
-    alert('Поиск по сообщениям (демо-режим)');
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -590,7 +584,7 @@ createGroupModal.addEventListener('click', (e) => {
     }
 });
 
-// creategroup modal
+// settings group modal
 
 const chatSettingsModal = document.getElementById('chatSettingsModal');
 const chatSettingsForm = document.getElementById('chatSettingsForm');
@@ -608,12 +602,10 @@ chatSettingsButtons.forEach(btn => {
 
         chatSettingsForm.action = `/api/messenger/chats/${activeChatId}/update/`;
 
-        // 2. Заполняем текстовое поле формы
         if (settingsNameInput) {
             settingsNameInput.value = chat.name;
         }
 
-        // 3. Показываем превью текущей аватарки, если она есть
         if (chat.avatar && avatarPreviewImg) {
             avatarPreviewImg.src = chat.avatar;
             avatarPreviewImg.style.display = 'block';
@@ -625,7 +617,6 @@ chatSettingsButtons.forEach(btn => {
     });
 });
 
-// При отправке формы:
 chatSettingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -642,7 +633,6 @@ chatSettingsForm.addEventListener('submit', async (e) => {
             }
         });
 
-        // Защита от HTML-ответов (предыдущая ошибка)
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
@@ -665,7 +655,7 @@ chatSettingsForm.addEventListener('submit', async (e) => {
     }
 });
 
-const fileInput = document.getElementById('settingsAvatar'); // Инпут созданный Django
+const fileInput = document.getElementById('settingsAvatar');
 const changeAvatarBtn = document.getElementById('changeAvatarBtn');
 const removeAvatarBtn = document.getElementById('removeAvatarBtn');
 const deleteAvatarFlag = document.getElementById('deleteAvatarFlag');
