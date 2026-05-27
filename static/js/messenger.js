@@ -334,7 +334,7 @@ let timeout = null;
 
 searchChatsInput.addEventListener('input', (e) => { 
     clearTimeout(timeout);
-    console.log(e.target.value)
+    
     if (e.target.value.length == 0){
         updateChatList();
         markChatAsSelected();
@@ -355,7 +355,7 @@ chatDeleteButton.addEventListener('click', (e) => {
         fetch(`/api/messenger/chat-delete/?chat=${activeChatId}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRFToken': csrftoken,  // Обязательный заголовок для Django
+                'X-CSRFToken': csrftoken,
                 'Content-Type': 'application/json'
             }
         })
